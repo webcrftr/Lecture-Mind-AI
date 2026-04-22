@@ -1,0 +1,109 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stores user preferences and study data",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "preferences": {
+          "type": "object",
+          "properties": {
+            "targetExam": { "type": "string", "enum": ["JEE", "NEET"] },
+            "mainSubject": { "type": "string" }
+          }
+        },
+        "streak": { "type": "integer" },
+        "lastStudyDate": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Content": {
+      "title": "Uploaded Content",
+      "description": "Original content uploaded by user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["youtube", "pdf", "text"] },
+        "source": { "type": "string" },
+        "title": { "type": "string" },
+        "transcript": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["processing", "completed", "error"] }
+      },
+      "required": ["id", "userId", "type", "createdAt"]
+    },
+    "StudyMaterial": {
+      "title": "Generated Study Material",
+      "description": "AI generated notes, summaries and formulas",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "contentId": { "type": "string" },
+        "userId": { "type": "string" },
+        "summary": {
+          "type": "object",
+          "properties": {
+            "short": { "type": "string" },
+            "medium": { "type": "string" },
+            "detailed": { "type": "string" }
+          }
+        },
+        "concepts": { "type": "array", "items": { "type": "string" } },
+        "formulas": { "type": "array", "items": { "type": "string" } },
+        "subject": { "type": "string" },
+        "topic": { "type": "string" }
+      },
+      "required": ["id", "contentId", "userId"]
+    },
+    "Flashcard": {
+      "title": "Flashcard",
+      "description": "Q&A pair for spaced repetition",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "contentId": { "type": "string" },
+        "question": { "type": "string" },
+        "answer": { "type": "string" },
+        "subject": { "type": "string" },
+        "masteryLevel": { "type": "integer" },
+        "nextReview": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "question", "answer"]
+    },
+    "Quiz": {
+      "title": "Quiz",
+      "description": "Assessment generated from content",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "contentId": { "type": "string" },
+        "userId": { "type": "string" },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "question": { "type": "string" },
+              "options": { "type": "array", "items": { "type": "string" } },
+              "correctAnswer": { "type": "string" },
+              "explanation": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": { "schema": "User", "description": "User profiles" },
+    "/contents/{contentId}": { "schema": "Content", "description": "Source content" },
+    "/studyMaterials/{materialId}": { "schema": "StudyMaterial", "description": "Generated notes" },
+    "/flashcards/{cardId}": { "schema": "Flashcard", "description": "Flashcards" },
+    "/quizzes/{quizId}": { "schema": "Quiz", "description": "Quizzes" }
+  }
+}
